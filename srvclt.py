@@ -1,6 +1,7 @@
 import socket
 import threading
 import pickle
+import re
 from comutil import ComUnit
 
 class Server():
@@ -27,7 +28,8 @@ class Server():
 
                 print("$ say client:{}".format(addr))
 
-                content = pickle.load(data)
+                content = pickle.loads(data)
+                #print('client IP Address:', content.reciever)
                 if content.reciever in self.clients:
                     reciever = self.clients[content.reciever]
                     reciever.send(data)
@@ -46,6 +48,7 @@ class Server():
         while True:
             new_clt, addr = self.sock.accept()
             # クライアントをリストに追加
+            addr = addr[0]
             self.clients[addr] = new_clt
             print("+ join client:{}".format(addr))
 
@@ -72,8 +75,8 @@ class Client():
                 data = self.sock.recv(self.BUFFER_SIZE)
                 if data == b"":
                     break
-                content = pickle.load(data)
-                print(content.menuId, content.num)
+                content = pickle.loads(data)
+                print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
             except ConnectionResetError:
                 break
 
@@ -87,12 +90,13 @@ class Client():
 
         # データ入力ループ
         while True:
+            print('input order: menuId, num, reciever IP Address')
             data = input("> ")
             if data == "exit":
                 break
             else:
                 try:
-                    menuId, num, reciever = date.split()
+                    menuId, num, reciever = re.split('[,\s]+',data)
                     unit = ComUnit(0 ,self.CLIENTIP, reciever, menuId, num, self.orderId)
                     self.sock.send(pickle.dumps(unit))
                     self.orderId += 1
