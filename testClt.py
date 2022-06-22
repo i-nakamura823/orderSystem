@@ -1,5 +1,5 @@
 import srvclt
 
-clt = srvclt.Client()
+clt = srvclt.Client(input())
 clt.prepareSocket()
 clt.run()

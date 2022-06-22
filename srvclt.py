@@ -1,10 +1,11 @@
 import socket
 import threading
+import pickle
 from comutil import ComUnit
 
 class Server():
     def __init__(self):
-        self.SERVERIP = '127.0.0.1'
+        self.SERVERIP = '192.168.0.3'
         #SERVERIP = '192.168.0.3'
         self.PORT = 334
         self.BUFFER_SIZE = 1024
@@ -26,10 +27,10 @@ class Server():
 
                 print("$ say client:{}".format(addr))
 
-                client.send(data)
-                #content = pickle.load(data)
-                #reciever = self.clients[content.reciever]
-                #reciever.send(data)
+                content = pickle.load(data)
+                if content.reciever in self.clients:
+                    reciever = self.clients[content.reciever]
+                    reciever.send(data)
 
             except ConnectionResetError:
                 break
@@ -52,14 +53,16 @@ class Server():
             thread.start()
 
 class Client():
-    def __init__(self):
-        self.IPADDR = "127.0.0.1"
+    def __init__(self, ip):
+        self.CLIENTIP = ip
+        self.SERVERIP = '192.168.0.3'
         self.PORT = 334
         self.BUFFER_SIZE = 1024
+        self.orderId = 0
 
     def prepareSocket(self):
         sock = socket.socket(socket.AF_INET)
-        sock.connect((self.IPADDR, self.PORT))
+        sock.connect((self.SERVERIP, self.PORT))
         self.sock = sock
 
     # データ受信関数
@@ -69,7 +72,8 @@ class Client():
                 data = self.sock.recv(self.BUFFER_SIZE)
                 if data == b"":
                     break
-                print(data.decode("utf-8"))
+                content = pickle.load(data)
+                print(content.menuId, content.num)
             except ConnectionResetError:
                 break
 
@@ -88,7 +92,10 @@ class Client():
                 break
             else:
                 try:
-                    self.sock.send(data.encode("utf-8"))
+                    menuId, num, reciever = date.split()
+                    unit = ComUnit(0 ,self.CLIENTIP, reciever, menuId, num, self.orderId)
+                    self.sock.send(pickle.dumps(unit))
+                    self.orderId += 1
                 except ConnectionResetError:
                     break
 
