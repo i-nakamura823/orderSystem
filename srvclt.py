@@ -79,9 +79,11 @@ class Client():
                 print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
             except ConnectionResetError:
                 break
-
-        self.sock.shutdown(socket.SHUT_RDWR)
-        self.sock.close()
+        try:
+            self.sock.shutdown(socket.SHUT_RDWR)
+            self.sock.close()
+        except OSError:
+            pass
         
     def run(self):
         # �f�[�^��M���T�u�X���b�h�Ŏ��s
