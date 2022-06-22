@@ -37,7 +37,7 @@ class Server():
             except ConnectionResetError:
                 break
 
-        # ƒNƒ‰ƒCƒAƒ“ƒgƒŠƒXƒg‚©‚çíœ
+        # ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
         self.clients.pop(addr)
         print("- close client:{}".format(addr))
 
@@ -47,7 +47,7 @@ class Server():
     def run(self):
         while True:
             new_clt, addr = self.sock.accept()
-            # ƒNƒ‰ƒCƒAƒ“ƒg‚ðƒŠƒXƒg‚É’Ç‰Á
+            # ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã‚’ãƒªã‚¹ãƒˆã«è¿½åŠ 
             addr = addr[0]
             self.clients[addr] = new_clt
             print("+ join client:{}".format(addr))
@@ -68,7 +68,7 @@ class Client():
         sock.connect((self.SERVERIP, self.PORT))
         self.sock = sock
 
-    # ƒf[ƒ^ŽóMŠÖ”
+    # ãƒ‡ãƒ¼ã‚¿å—ä¿¡é–¢æ•°
     def recvData(self):
         while True:
             try:
@@ -82,26 +82,44 @@ class Client():
 
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
-
+        
     def run(self):
-        # ƒf[ƒ^ŽóM‚ðƒTƒuƒXƒŒƒbƒh‚ÅŽÀs
+        # ï¿½fï¿½[ï¿½^ï¿½ï¿½Mï¿½ï¿½ï¿½Tï¿½uï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½ÅŽï¿½ï¿½s
         thread = threading.Thread(target=self.recvData)
         thread.start()
 
-        # ƒf[ƒ^“ü—Íƒ‹[ƒv
-        while True:
-            print('input order: menuId, num, reciever IP Address')
-            data = input("> ")
-            if data == "exit":
-                break
-            else:
-                try:
-                    menuId, num, reciever = re.split('[,\s]+',data)
-                    unit = ComUnit(0 ,self.CLIENTIP, reciever, menuId, num, self.orderId)
-                    self.sock.send(pickle.dumps(unit))
-                    self.orderId += 1
-                except ConnectionResetError:
-                    break
+    def send(self, unit):
+        # ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½v
+        try:
+            unit.key = self.orderId
+            self.sock.send(pickle.dumps(unit))
+            self.orderId += 1
+        except ConnectionResetError:
+            pass
 
+    def disconnect(self):
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
+
+#     def run(self):
+#         # ãƒ‡ãƒ¼ã‚¿å—ä¿¡ã‚’ã‚µãƒ–ã‚¹ãƒ¬ãƒƒãƒ‰ã§å®Ÿè¡Œ
+#         thread = threading.Thread(target=self.recvData)
+#         thread.start()
+
+#         # ãƒ‡ãƒ¼ã‚¿å…¥åŠ›ãƒ«ãƒ¼ãƒ—
+#         while True:
+#             print('input order: menuId, num, reciever IP Address')
+#             data = input("> ")
+#             if data == "exit":
+#                 break
+#             else:
+#                 try:
+#                     menuId, num, reciever = re.split('[,\s]+',data)
+#                     unit = ComUnit(0 ,self.CLIENTIP, reciever, menuId, num, self.orderId)
+#                     self.sock.send(pickle.dumps(unit))
+#                     self.orderId += 1
+#                 except ConnectionResetError:
+#                     break
+
+#         self.sock.shutdown(socket.SHUT_RDWR)
+#         self.sock.close()
