@@ -2,7 +2,6 @@ import socket
 import threading
 import pickle
 import re
-from comutil import ComUnit
 
 class Server():
     def __init__(self):

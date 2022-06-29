@@ -1,6 +1,10 @@
+import os
+import sys
+sys.path.append(os.pardir)
+
 import srvclt
 import touchAPI
-from comutil import ComUnit
+import comutil
 
 touchAPI.setup()
 print('Welcome!!!')
@@ -11,7 +15,7 @@ while True:
     count=touchAPI.count()
     if count==0:
         break
-    unit = ComUnit(9 ,"192.168.0.7", "192.168.0.7", None, count, None)
+    unit = comutil.ComUnit(9 ,"192.168.0.7", "192.168.0.7", None, count, None)
     clt.send(unit)
 touchAPI.end()
 clt.disconnect()
