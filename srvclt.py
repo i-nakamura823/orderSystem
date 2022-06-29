@@ -1,7 +1,6 @@
 import socket
 import threading
 import pickle
-import re
 from comutil import ComUnit
 
 class Server():
@@ -11,6 +10,7 @@ class Server():
         self.PORT = 334
         self.BUFFER_SIZE = 1024
         self.clients = dict()
+        self.orderCount = 0
 
     def prepareSocket(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,6 +30,13 @@ class Server():
 
                 content = pickle.loads(data)
                 #print('client IP Address:', content.reciever)
+                # IDが未割当の注文にIDを付与して data を更新・返送
+                if content.orderId is None:
+                    content.orderId = self.orderCount
+                    data = pickle.dumps(content)
+                    client.send(data)
+                    self.orderCount += 1
+                # 送信先が存在することを確認して data を送信
                 if content.reciever in self.clients:
                     reciever = self.clients[content.reciever]
                     reciever.send(data)
@@ -61,7 +68,8 @@ class Client():
         self.SERVERIP = '192.168.0.3'
         self.PORT = 334
         self.BUFFER_SIZE = 1024
-        self.orderId = 0
+        self.key = 0
+        self.msglog = dict()
 
     def prepareSocket(self):
         sock = socket.socket(socket.AF_INET)
@@ -76,7 +84,12 @@ class Client():
                 if data == b"":
                     break
                 content = pickle.loads(data)
-                print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
+                if content.sender != self.CLIENTIP:
+                    print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
+                # サーバから注文IDつきの ComUnit が返送されたとき msglog に入っているログを更新
+                if content.key in self.msglog:
+                    self.msglog[content.key] = content
+                    print(f'My order #{content.key} is allocated ID({content.orderId})')
             except ConnectionResetError:
                 break
         try:
@@ -86,20 +99,24 @@ class Client():
             pass
         
     def run(self):
-        # �f�[�^��M���T�u�X���b�h�Ŏ��s
+        # データ受信をサブスレッドで実行
         thread = threading.Thread(target=self.recvData)
         thread.start()
 
     def send(self, unit):
-        # �f�[�^�����[�v
+        # 引数の ComUnit を pickle 化してサーバに送信
+        # client 情報を Unit に付与 
+        unit.sender = self.CLIENTIP
+        unit.key = self.key
         try:
-            unit.key = self.orderId
             self.sock.send(pickle.dumps(unit))
-            self.orderId += 1
+            self.msglog[self.key] = unit
+            self.key += 1
         except ConnectionResetError:
             pass
 
     def disconnect(self):
+        # サーバとの接続を切断
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
 
