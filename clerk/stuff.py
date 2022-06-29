@@ -9,6 +9,7 @@ import threading
 import socket
 import pickle
 
+tree = ""
 
 def sub_window():
     sub_win = tk.Toplevel()
@@ -69,7 +70,8 @@ def Create_orderList() :
     tree1.insert(parent='', index='end', iid=4, values=(3,'ビール', 3, 400))
 
     # Buttonの生成
-    button = Button(root, text='Increment Price', command=partial(clear_order_fromFocus, tree1))
+    #button = Button(root, text='Increment Price', command=partial(clear_order_fromFocus, tree1))
+    button = Button(root, text='Increment Price', command=clear_order_fromFocus)
     button_catchOrder = Button(root, text='catch_order', command=catch_order)
     #button_changeWindow = Button(root, text='catch_window', command=change_window)
 
@@ -93,7 +95,6 @@ def Create_orderList() :
 
 #button_changeWindow.pack()
 def main():
-    tree = ""
     thread1 = threading.Thread(target=Create_orderList)
     thread1.start()
 
@@ -134,7 +135,7 @@ class Client():
                     catch_order(tree, iid, content.sender, name, num, cost)
                     iid += 1
                 elif content.mode == 1 :
-                    clear_order
+                    clear_order_fromFocus
             except ConnectionResetError:
                 break
 
@@ -158,8 +159,6 @@ class Client():
     def disconnect(self):
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
-
-#client = Client(ip, tree)
 
 
 if __name__ == "__main__":
