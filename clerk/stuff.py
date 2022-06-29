@@ -27,6 +27,10 @@ def clear_order_fromFocus() :
 def catch_order(tree, iid, zaseki, name, num, cost) :
     tree.insert(parent='', index='end', iid=iid, values=(zaseki,name, num, cost))
 
+def add_chicken(tree) :
+    tree.insert(parent='', index='end', iid=10, values=(1,"karaage", 3, 300))
+
+
 #
 def Create_orderList() :
     #列の識別名を指定
@@ -73,8 +77,10 @@ def Create_orderList() :
     #button = Button(root, text='Increment Price', command=partial(clear_order_fromFocus, tree1))
     button = Button(root, text='Increment Price', command=clear_order_fromFocus)
     button_catchOrder = Button(root, text='catch_order', command=catch_order)
+    b = Button(root, text="addKaraage", command=partial(
+        add_chicken, tree1
+    ))
     #button_changeWindow = Button(root, text='catch_window', command=change_window)
-
     # Styleの設定
     style = ttk.Style()
     style.theme_use("default")
@@ -87,6 +93,7 @@ def Create_orderList() :
     tree = tree1
 
     button.pack()
+    b.pack()
     button_catchOrder.pack()
 
     root.mainloop()
