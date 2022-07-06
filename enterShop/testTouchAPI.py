@@ -15,7 +15,7 @@ while True:
     count=touchAPI.count()
     if count==0:
         break
-    unit = comutil.ComUnit(9 ,"192.168.0.7", "192.168.0.7", None, count, None)
+    unit = comutil.ComUnit(9 ,"192.168.0.5", None, count)
     clt.send(unit)
 touchAPI.end()
 clt.disconnect()
