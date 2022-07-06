@@ -1,8 +1,12 @@
+import os
+import sys
+sys.path.append(os.pardir)
+
 import socket
 import threading
 import pickle
 import re
-from ..comutil import ComUnit
+from comutil
 
 class Client():
     def __init__(self, ip, tree):

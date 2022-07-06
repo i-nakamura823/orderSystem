@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.append(os.pardir)
+
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
@@ -9,7 +13,10 @@ import threading
 import socket
 import pickle
 
+import comutil
+
 tree = ""
+id = 0
 
 def sub_window():
     sub_win = tk.Toplevel()
@@ -21,6 +28,7 @@ def sub_window():
 def clear_order_fromFocus() :
     selected = tree.focus()
     temp = tree.item(selected, 'values')
+    print(temp)
     tree.delete(selected)
 
 #注文が届いたら新たに行を追加
@@ -28,8 +36,13 @@ def catch_order(tree, iid, zaseki, name, num, cost) :
     tree.insert(parent='', index='end', iid=iid, values=(zaseki,name, num, cost))
 
 def add_chicken(tree) :
-    tree.insert(parent='', index='end', iid=10, values=(1,"karaage", 3, 300))
-
+    global id
+    tree.insert(parent='', index='end', iid=id, values=(1,"からあげ", 3, 300))
+    id += 1
+def add_mame(tree) :
+    global id
+    tree.insert(parent='', index='end', iid=id, values=(1,"枝豆", 3, 300))
+    id += 1
 
 #
 def Create_orderList() :
@@ -38,7 +51,7 @@ def Create_orderList() :
     #メインウインドウの生成
     root = tk.Tk()
     root.title("オーダーリスト")
-    root.geometry('400x300')
+    root.geometry('400x500')
 
     #Notebookの作成（タブ管理）
     #notebook = ttk.Notebook(root)
@@ -67,18 +80,21 @@ def Create_orderList() :
     tree1.heading('num', text='個数',anchor='center')
     tree1.heading('cost',text='価格', anchor='center')
     # レコードの追加
-    tree1.insert(parent='', index='end', iid=0 ,values=(1, 'ビール', 1, 400))
-    tree1.insert(parent='', index='end', iid=1 ,values=(2,'からあげ', 2, 350))
-    tree1.insert(parent='', index='end', iid=2, values=(3,'枝豆', 1, 300))
-    tree1.insert(parent='', index='end', iid=3, values=(1,'からあげ', 2, 350))
-    tree1.insert(parent='', index='end', iid=4, values=(3,'ビール', 3, 400))
+    # tree1.insert(parent='', index='end', iid=0 ,values=(1, 'ビール', 1, 400))
+    # tree1.insert(parent='', index='end', iid=1 ,values=(2,'からあげ', 2, 350))
+    # tree1.insert(parent='', index='end', iid=2, values=(3,'枝豆', 1, 300))
+    # tree1.insert(parent='', index='end', iid=3, values=(1,'からあげ', 2, 350))
+    # tree1.insert(parent='', index='end', iid=4, values=(3,'ビール', 3, 400))
 
     # Buttonの生成
     #button = Button(root, text='Increment Price', command=partial(clear_order_fromFocus, tree1))
     button = Button(root, text='Increment Price', command=clear_order_fromFocus)
-    button_catchOrder = Button(root, text='catch_order', command=catch_order)
-    b = Button(root, text="addKaraage", command=partial(
+    #button_catchOrder = Button(root, text='catch_order', command=catch_order)
+    b = Button(root, text="からあげ", command=partial(
         add_chicken, tree1
+    ))
+    b2 = Button(root, text="枝豆", command=partial(
+        add_mame, tree1
     ))
     #button_changeWindow = Button(root, text='catch_window', command=change_window)
     # Styleの設定
@@ -94,7 +110,8 @@ def Create_orderList() :
 
     button.pack()
     b.pack()
-    button_catchOrder.pack()
+    b2.pack()
+    #button_catchOrder.pack()
 
     root.mainloop()
 
