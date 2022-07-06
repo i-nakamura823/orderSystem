@@ -10,7 +10,7 @@ import srvclt
 def combo():
 
     root = tk.Tk()
-    root.geometry('500x400')
+    root.geometry('700x600')
     
     notebook = ttk.Notebook(root)
     tab_order = tk.Frame(notebook, bg = "white", takefocus = True)
@@ -23,7 +23,7 @@ def combo():
     mode = ('order', 'atikyaku', 'mitsugi', 'kossori', 'megaphone', 'check')
     menu = ('beer','karaage','edamame')
     num = ('1','2','3')
-    seat_num = ('1','2','3','4')
+    seat_num = ('1','2','3')
     onedarilist_num = ('1','2','3','4','5','6','7','8','9','10')
     
 
@@ -48,7 +48,9 @@ def combo():
     #combobox1 = ttk.Combobox(root, textvariable = v1, value = module1)
     #order
     mode_b_order = ttk.Button(tab_order, text = "mode change")
+    menu_label_order = ttk.Label(tab_order, text = "menu", background = "white")
     menu_cb_order = ttk.Combobox(tab_order, textvariable = menu_selected, value = menu)
+    num_label_order = ttk.Label(tab_order, text = "number", background = "white")
     num_cb_order = ttk.Combobox(tab_order, textvariable = num_selected, value = num)
     send_b_order = ttk.Button(tab_order, text = "send")
     check_b_order = ttk.Button(tab_order, text = "check")
@@ -58,8 +60,11 @@ def combo():
     
     #atikyaku
     mode_b_atikyaku = ttk.Button(tab_atikyaku, text = "mode change")
+    menu_label_atikyaku = ttk.Label(tab_atikyaku, text = "menu", background = "white")
     menu_cb_atikyaku = ttk.Combobox(tab_atikyaku, textvariable = menu_selected, value = menu)
+    num_label_atikyaku = ttk.Label(tab_atikyaku, text = "number", background = "white")
     num_cb_atikyaku = ttk.Combobox(tab_atikyaku, textvariable = num_selected, value = num)
+    seat_num_label_atikyaku = ttk.Label(tab_atikyaku, text = "seat number", background = "white")
     seat_num_cb_atikyaku = ttk.Combobox(tab_atikyaku, textvariable = seat_num_selected, value = seat_num)
     send_b_atikyaku = ttk.Button(tab_atikyaku, text = "send")
     check_b_atikyaku = ttk.Button(tab_atikyaku, text = "check")
@@ -69,6 +74,7 @@ def combo():
     
     #mitsugi
     mode_b_mitsugi = ttk.Button(tab_mitsugi, text = "mode change")
+    list_label_mitsugi = ttk.Label(tab_mitsugi, text = "list number", background = "white")
     onedarilist_num_cb_mitsugi = ttk.Combobox(tab_mitsugi, textvariable = onedarilist_num_selected, value = onedarilist_num)
     send_b_mitsugi = ttk.Button(tab_mitsugi, text = "send")
     check_b_mitsugi = ttk.Button(tab_mitsugi, text = "check")
@@ -78,8 +84,11 @@ def combo():
     
     #kossori
     mode_b_kossori = ttk.Button(tab_kossori, text = "mode change")
+    menu_label_kossori = ttk.Label(tab_kossori, text = "menu", background = "white")
     menu_cb_kossori = ttk.Combobox(tab_kossori, textvariable = menu_selected, value = menu)
+    num_label_kossori = ttk.Label(tab_kossori, text = "number", background = "white")
     num_cb_kossori = ttk.Combobox(tab_kossori, textvariable = num_selected, value = num)
+    seat_num_label_kossori = ttk.Label(tab_kossori, text = "seat number", background = "white")
     seat_num_cb_kossori = ttk.Combobox(tab_kossori, textvariable = seat_num_selected, value = seat_num)
     send_b_kossori = ttk.Button(tab_kossori, text = "send")
     check_b_kossori = ttk.Button(tab_kossori, text = "check")
@@ -89,7 +98,9 @@ def combo():
     
     #megaphone
     mode_b_megaphone = ttk.Button(tab_megaphone, text = "mode change")
+    menu_label_megaphone = ttk.Label(tab_megaphone, text = "menu", background = "white")
     menu_cb_megaphone = ttk.Combobox(tab_megaphone, textvariable = menu_selected, value = menu)
+    num_label_megaphone = ttk.Label(tab_megaphone, text = "number", background = "white")
     num_cb_megaphone = ttk.Combobox(tab_megaphone, textvariable = num_selected, value = num)
     send_b_megaphone = ttk.Button(tab_megaphone, text = "send")
     check_b_megaphone = ttk.Button(tab_megaphone, text = "check")
@@ -107,37 +118,48 @@ def combo():
     #combobox1.pack(pady = 10)
     #order
     mode_b_order.pack(pady = 10)
-    menu_cb_order.pack(pady = 10)
-    num_cb_order.pack(pady = 10)
+    menu_label_order.pack(pady = (10, 0))
+    menu_cb_order.pack(pady = (0, 10))
+    num_label_order.pack(pady = (10, 0))
+    num_cb_order.pack(pady = (0, 10))
     send_b_order.pack(pady = 10)
     check_b_order.pack(pady = 10)
     
     #atikyaku
     mode_b_atikyaku.pack(pady = 10)
-    menu_cb_atikyaku.pack(pady = 10)
-    num_cb_atikyaku.pack(pady = 10)
-    seat_num_cb_atikyaku.pack(pady = 10)
+    menu_label_atikyaku.pack(pady = (10, 0))
+    menu_cb_atikyaku.pack(pady = (0, 10))
+    num_label_atikyaku.pack(pady = (10, 0))
+    num_cb_atikyaku.pack(pady = (0, 10))
+    seat_num_label_atikyaku.pack(pady = (10, 0))
+    seat_num_cb_atikyaku.pack(pady = (0, 10))
     send_b_atikyaku.pack(pady = 10)
     check_b_atikyaku.pack(pady = 10)
     
     #mitsugi
     mode_b_mitsugi.pack(pady = 10)
-    onedarilist_num_cb_mitsugi.pack(pady = 10)
+    list_label_mitsugi.pack(pady = (10, 0))
+    onedarilist_num_cb_mitsugi.pack(pady = (0, 10))
     send_b_mitsugi.pack(pady = 10)
     check_b_mitsugi.pack(pady = 10)
     
     #kossori
     mode_b_kossori.pack(pady = 10)
-    menu_cb_kossori.pack(pady = 10)
-    num_cb_kossori.pack(pady = 10)
-    seat_num_cb_kossori.pack(pady = 10)
+    menu_label_kossori.pack(pady = (10, 0))
+    menu_cb_kossori.pack(pady = (0, 10))
+    num_label_kossori.pack(pady = (10, 0))
+    num_cb_kossori.pack(pady = (0, 10))
+    seat_num_label_kossori.pack(pady = (10, 0))
+    seat_num_cb_kossori.pack(pady = (0, 10))
     send_b_kossori.pack(pady = 10)
     check_b_kossori.pack(pady = 10)
     
     #megaphone
     mode_b_megaphone.pack(pady = 10)
-    menu_cb_megaphone.pack(pady = 10)
-    num_cb_megaphone.pack(pady = 10)
+    menu_label_megaphone.pack(pady = (10, 0))
+    menu_cb_megaphone.pack(pady = (0, 10))
+    num_label_megaphone.pack(pady = (10, 0))
+    num_cb_megaphone.pack(pady = (0, 10))
     send_b_megaphone.pack(pady = 10)
     check_b_megaphone.pack(pady = 10)
     
@@ -199,15 +221,16 @@ def mb():
     onedarilist_num_selected.set("")
     
 def sb():
+    menu_id = getMenuid()
     if mode == 1 :
         mode_id = 0
     elif mode == 2:
         mode_id = 1
+        menu_id = onedarilist_num_selected.set("")
     elif mode == 3:
         mode_id = 2
     elif mode == 4:
         mode_id = 3
-    menu_id = getMenuid()
     msg = comutil.ComUnit(mode_id, '192.168.0.6', menu_id, num_selected.get())
     clt = srvclt.Client('192.168.0.6')
     clt.prepareSocket()
