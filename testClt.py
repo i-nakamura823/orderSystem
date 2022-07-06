@@ -7,13 +7,13 @@ clt = srvclt.Client(input('> '))
 clt.prepareSocket()
 clt.run()
 while True:
-    print('input order: menuId, num, reciever IP Address')
+    print('input order: mode, menuId, num, reciever IP Address')
     data = input("> ")
     if data == "exit":
         break
     else:
-        menuId, num, reciever = re.split('[,\s]+',data)
-        unit = ComUnit(reciever = reciever, menuId = menuId, num = num)
+        mode, menuId, num, reciever = re.split('[,\s]+',data)
+        unit = ComUnit(int(mode), reciever, int(menuId), int(num))
     clt.send(unit)
 clt.disconnect()
 

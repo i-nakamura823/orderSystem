@@ -103,10 +103,13 @@ class Client():
         thread = threading.Thread(target=self.recvData)
         thread.start()
 
-    def send(self, unit):
+    def send(self, unit, sender = None):
         # 引数の ComUnit を pickle 化してサーバに送信
         # client 情報を Unit に付与 
-        unit.sender = self.CLIENTIP
+        if sender is None:
+            unit.sender = self.CLIENTIP
+        else:
+            unit.sender = sender
         unit.key = self.key
         try:
             self.sock.send(pickle.dumps(unit))
