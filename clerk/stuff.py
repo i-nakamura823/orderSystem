@@ -1,6 +1,8 @@
 import os
 import sys
 sys.path.append(os.pardir)
+import comutil
+import menu
 
 from tkinter import *
 from tkinter import ttk
@@ -12,8 +14,6 @@ import threading
 
 import socket
 import pickle
-
-import comutil
 
 tree = ""
 id = 0
@@ -32,8 +32,10 @@ def clear_order_fromFocus() :
     tree.delete(selected)
 
 #注文が届いたら新たに行を追加
-def catch_order(tree, iid, zaseki, name, num, cost) :
-    tree.insert(parent='', index='end', iid=iid, values=(zaseki,name, num, cost))
+def catch_order(tree, zaseki, name, num, cost) :
+    global id
+    tree.insert(parent='', index='end', iid=id, values=(zaseki,name, num, cost))
+    id += 1
 
 def add_chicken(tree) :
     global id
@@ -119,12 +121,23 @@ def Create_orderList() :
 
 #button_changeWindow.pack()
 def main():
+    global tree
     thread1 = threading.Thread(target=Create_orderList)
     thread1.start()
+    
+    clt = Client('192.168.0.5',tree)
+    clt.prepareSocket()
+    clt.run()
 
     time.sleep(2)
 
     tree.focus_set()
+    
+    for i in range(3):
+        time.sleep(1)
+        print('オーダーします')
+        unit = comutil.ComUnit(8 , "192.168.0.5", i, i)
+        clt.send(unit)
 
 
 
@@ -155,9 +168,13 @@ class Client():
                     break
                 content = pickle.loads(data)
                 print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
-                if content.mode == 3 :
-                    catch_order(tree, iid, content.sender, name, num, cost)
-                    iid += 1
+                menuId = content.menuId
+                if content.mode == 8 :
+                    m = menu.Menu()
+                    name = m.getName(menuId)
+                    price = m.getPrice(menuId)
+                    catch_order(tree, content.sender, name, content.num, price)
+                    #self.iid += 1
                 elif content.mode == 1 :
                     clear_order_fromFocus
             except ConnectionResetError:
@@ -174,6 +191,7 @@ class Client():
     def send(self, unit):
         # �f�[�^�����[�v
         try:
+            unit.sender = self.CLIENTIP
             unit.key = self.orderId
             self.sock.send(pickle.dumps(unit))
             self.orderId += 1

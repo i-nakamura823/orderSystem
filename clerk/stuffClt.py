@@ -32,7 +32,7 @@ class Client():
                     break
                 content = pickle.loads(data)
                 print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
-                if content.mode == 3 :
+                if content.mode == 9 :
                     catch_order(tree, iid, content.sender, name, num, cost)
                     iid += 1
                 elif content.mode == 1 :
