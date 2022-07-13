@@ -1,10 +1,9 @@
-# import os
-# import sys
-# sys.path.append(os.pardir)
-# import comutil
-# import menu
+import os
+import sys
+sys.path.append(os.pardir)
+import comutil
+import menu
 
-from re import sub
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
@@ -18,12 +17,21 @@ import pickle
 
 tree = ""
 id = 0
+subwindow = None
+clt = None
 
 def sendSeatNum(num):
+    global subwindow
+    global clt
     print(num)
+    unit = comutil.ComUnit(10 ,"192.168.0.7", None, num)
+    clt.send(unit)
+    subwindow.destroy()
 
 def sub_window(count):
+    global subwindow
     sub_win = tk.Toplevel()
+    subwindow = sub_win
     sub_win.geometry("420x200")
     sub_win.title("座席の指定")
     label_sub = tk.Label(sub_win, text = str(count) + "名様入店です", font=("","15","bold"))
@@ -109,7 +117,7 @@ def Create_orderList() :
     b2 = Button(root, text="枝豆", command=partial(
         add_mame, tree1
     ))
-    b3 = Button(root, text="subwindow", command=partial(
+    b3 = Button(root, text="enterShop", command=partial(
         sub_window, 3
     ))
     #button_changeWindow = Button(root, text='catch_window', command=change_window)
@@ -137,22 +145,22 @@ def Create_orderList() :
 #button_changeWindow.pack()
 def main():
     global tree
+    global clt
     thread1 = threading.Thread(target=Create_orderList)
     thread1.start()
     
-    # clt = Client('192.168.0.5',tree)
-    # clt.prepareSocket()
-    # clt.run()
+    clt = Client('192.168.0.5',tree)
+    clt.prepareSocket()
+    clt.run()
 
     time.sleep(2)
 
     tree.focus_set()
-    
-    # for i in range(3):
-    #     time.sleep(1)
-    #     print('オーダーします')
-    #     unit = comutil.ComUnit(8 , "192.168.0.5", i, i)
-    #     clt.send(unit)
+    for i in range(3):
+        time.sleep(1)
+        print('オーダーします')
+        unit = comutil.ComUnit(8 ,"192.168.0.5", i, i)
+        clt.send(unit)
 
 
 
@@ -188,10 +196,13 @@ class Client():
                     m = menu.Menu()
                     name = m.getName(menuId)
                     price = m.getPrice(menuId)
-                    catch_order(tree, content.sender, name, content.num, price)
-                    #self.iid += 1
-                elif content.mode == 1 :
-                    clear_order_fromFocus
+                    *_, seatNum = content.sender.split('.')
+                    seatNum = int(seatNum)/2
+                    catch_order(tree, int(seatNum), name, content.num, price)
+#                     iid += 1
+                elif content.mode == 9 :
+                    print('receive!!')
+                    sub_window(content.num)
             except ConnectionResetError:
                 break
 
