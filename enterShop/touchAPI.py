@@ -28,6 +28,7 @@ def setup():
     GPIO.output(seg_pin, GPIO.LOW)
 
 def count():
+    GPIO.output(seg_pin, GPIO.LOW)
     prev = 0
     now = 0
     count = 0
@@ -44,9 +45,13 @@ def count():
     #print("count: ", count)
     GPIO.output(seg[count%10], GPIO.HIGH)
     time.sleep(3)
-    GPIO.output(seg[count%10], GPIO.LOW)
+    #GPIO.output(seg[count%10], GPIO.LOW)
     #GPIO.cleanup()
     return count
+
+def display(num):
+    GPIO.output(seg_pin, GPIO.LOW)
+    GPIO.output(seg[num], GPIO.HIGH)
 
 def end():
     GPIO.cleanup()
