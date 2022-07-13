@@ -69,6 +69,7 @@ class Client():
         self.PORT = 334
         self.BUFFER_SIZE = 1024
         self.key = 0
+        self.msgHandler = None
         self.msglog = dict()
 
     def prepareSocket(self):
@@ -84,6 +85,8 @@ class Client():
                 if data == b"":
                     break
                 content = pickle.loads(data)
+                if self.msgHandler is not None:
+                    self.msgHandler(content)
                 if content.sender != self.CLIENTIP:
                     print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
                 # サーバから注文IDつきの ComUnit が返送されたとき msglog に入っているログを更新
@@ -97,6 +100,9 @@ class Client():
             self.sock.close()
         except OSError:
             pass
+        
+    def setMsgHandler(self, handler):
+        self.msgHandler = handler
         
     def run(self):
         # データ受信をサブスレッドで実行
