@@ -1,9 +1,10 @@
-import os
-import sys
-sys.path.append(os.pardir)
-import comutil
-import menu
+# import os
+# import sys
+# sys.path.append(os.pardir)
+# import comutil
+# import menu
 
+from re import sub
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
@@ -18,11 +19,21 @@ import pickle
 tree = ""
 id = 0
 
-def sub_window():
+def sendSeatNum(num):
+    print(num)
+
+def sub_window(count):
     sub_win = tk.Toplevel()
-    sub_win.geometry("300x100")
-    label_sub = tk.Label(sub_win, text="番さんから商品が届きました")
+    sub_win.geometry("420x200")
+    sub_win.title("座席の指定")
+    label_sub = tk.Label(sub_win, text = str(count) + "名様入店です", font=("","15","bold"))
+    b2 = Button(sub_win, height=10, width=10, bg="#7FFFD4", text="座席 2", command=partial(sendSeatNum, 2))
+    b4 = Button(sub_win, height=10, width=10, bg="#7FFFD4", text="座席 4", command=partial(sendSeatNum, 4))
+    b6 = Button(sub_win, height=10, width=10, bg="#7FFFD4", text="座席 6", command=partial(sendSeatNum, 6))
     label_sub.pack()
+    b2.pack(fill = 'x', padx=10, side = 'left')
+    b4.pack(fill = 'x', padx=10, side = 'left')
+    b6.pack(fill = 'x', padx=10, side = 'left')
 
 #注文を提供したらオーダーリストから消す
 def clear_order_fromFocus() :
@@ -90,13 +101,16 @@ def Create_orderList() :
 
     # Buttonの生成
     #button = Button(root, text='Increment Price', command=partial(clear_order_fromFocus, tree1))
-    button = Button(root, text='Increment Price', command=clear_order_fromFocus)
+    button = Button(root, text='Served!', command=clear_order_fromFocus)
     #button_catchOrder = Button(root, text='catch_order', command=catch_order)
     b = Button(root, text="からあげ", command=partial(
         add_chicken, tree1
     ))
     b2 = Button(root, text="枝豆", command=partial(
         add_mame, tree1
+    ))
+    b3 = Button(root, text="subwindow", command=partial(
+        sub_window, 3
     ))
     #button_changeWindow = Button(root, text='catch_window', command=change_window)
     # Styleの設定
@@ -113,6 +127,7 @@ def Create_orderList() :
     button.pack()
     b.pack()
     b2.pack()
+    b3.pack()
     #button_catchOrder.pack()
 
     root.mainloop()
@@ -125,19 +140,19 @@ def main():
     thread1 = threading.Thread(target=Create_orderList)
     thread1.start()
     
-    clt = Client('192.168.0.5',tree)
-    clt.prepareSocket()
-    clt.run()
+    # clt = Client('192.168.0.5',tree)
+    # clt.prepareSocket()
+    # clt.run()
 
     time.sleep(2)
 
     tree.focus_set()
     
-    for i in range(3):
-        time.sleep(1)
-        print('オーダーします')
-        unit = comutil.ComUnit(8 , "192.168.0.5", i, i)
-        clt.send(unit)
+    # for i in range(3):
+    #     time.sleep(1)
+    #     print('オーダーします')
+    #     unit = comutil.ComUnit(8 , "192.168.0.5", i, i)
+    #     clt.send(unit)
 
 
 
