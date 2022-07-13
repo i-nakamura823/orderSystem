@@ -221,6 +221,7 @@ def mb():
     onedarilist_num_selected.set("")
     
 def sb():
+    global clt
     menu_id = getMenuid()
     if mode == 1 :
         mode_id = 0
@@ -232,9 +233,6 @@ def sb():
     elif mode == 4:
         mode_id = 3
     msg = comutil.ComUnit(mode_id, '192.168.0.6', menu_id, num_selected.get())
-    clt = srvclt.Client('192.168.0.6')
-    clt.prepareSocket()
-    clt.run()
     clt.send(msg)
     
 def getMenuid():
@@ -244,6 +242,17 @@ def getMenuid():
         return 1
     elif menu_selected.get() == "edamame" :
         return 2
+    
+def getSeatid(ip):
+    iptoseat = {"192.168.0.2":1, "192.168.0.4":2, "192.168.0.6":3}
+    return iptoseat[ip]
+    
+def sub_window():
+    sub_win = tk.Toolevel()
+    sub_win.geometry("300x100")
+    global clt
+    seatnum = getSeatid(clt.sender)
+    label_sub = tk.Label(sub_win, text = f"")
 """
 def bo():
     nb.select(ta)
@@ -291,6 +300,9 @@ partlist = [[0 for i in range(6)] for j in range(5)]
 part = 0
 global mode
 mode = 0
+clt = srvclt.Client('192.168.0.6')
+clt.prepareSocket()
+clt.run()
 thread1 = threading.Thread(target = combo)
 thread1.start()
 time.sleep(2)
