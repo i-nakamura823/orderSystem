@@ -49,9 +49,9 @@ def count():
     #GPIO.cleanup()
     return count
 
-def display(num):
+def display(content):
     GPIO.output(seg_pin, GPIO.LOW)
-    GPIO.output(seg[num], GPIO.HIGH)
+    GPIO.output(seg[content.num], GPIO.HIGH)
 
 def end():
     GPIO.cleanup()

@@ -9,6 +9,7 @@ import comutil
 touchAPI.setup()
 print('Welcome!!!')
 clt = srvclt.Client("192.168.0.7")
+clt.setMsgHandler(touchAPI.display)
 clt.prepareSocket()
 clt.run()
 while True:
