@@ -43,6 +43,7 @@ def count():
         prev = now
 
     #print("count: ", count)
+    GPIO.output(seg_pin, GPIO.LOW)
     GPIO.output(seg[count%10], GPIO.HIGH)
     time.sleep(3)
     #GPIO.output(seg[count%10], GPIO.LOW)
