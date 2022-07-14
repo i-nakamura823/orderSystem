@@ -4,6 +4,9 @@ import threading
 import time
 from sense_hat import SenseHat
 sense = SenseHat()
+import os
+import sys
+sys.path.append(os.pardir)
 import comutil
 import srvclt
 import copy
