@@ -3,6 +3,7 @@ import sys
 sys.path.append(os.pardir)
 import comutil
 import menu
+import srvclt
 
 from tkinter import *
 from tkinter import ttk
@@ -133,14 +134,25 @@ def Create_orderList() :
     tree = tree1
 
     button.pack()
-    b.pack()
-    b2.pack()
-    b3.pack()
+    # b.pack()
+    # b2.pack()
+    # b3.pack()
     #button_catchOrder.pack()
 
     root.mainloop()
 
-
+def registerOrder(content):
+    menuId = content.menuId
+    if content.mode == 8 :
+        m = menu.Menu()
+        name = m.getName(menuId)
+        price = m.getPrice(menuId)
+        *_, seatNum = content.sender.split('.')
+        seatNum = int(seatNum)/2
+        catch_order(tree, int(seatNum), name, content.num, price)
+    elif content.mode == 9 :
+        print('receive!!')
+        sub_window(content.num)
 
 #button_changeWindow.pack()
 def main():
@@ -149,84 +161,85 @@ def main():
     thread1 = threading.Thread(target=Create_orderList)
     thread1.start()
     
-    clt = Client('192.168.0.5',tree)
+    clt = srvclt.Client('192.168.0.5')
+    clt.setMsgHandler(registerOrder)
     clt.prepareSocket()
     clt.run()
 
-    time.sleep(2)
+    # time.sleep(2)
 
-    tree.focus_set()
-    for i in range(3):
-        time.sleep(1)
-        print('オーダーします')
-        unit = comutil.ComUnit(8 ,"192.168.0.5", i, i)
-        clt.send(unit)
+    # tree.focus_set()
+    # for i in range(3):
+    #     time.sleep(1)
+    #     print('オーダーします')
+    #     unit = comutil.ComUnit(8 ,"192.168.0.5", i, i)
+    #     clt.send(unit)
 
 
 
 #注文を受信したらオーダーリストに追加
 #catch_order(tree, 6, 1, "bi-ru", 2, 300)
 
-class Client():
-    def __init__(self, ip, tree):
-        self.CLIENTIP = ip
-        self.SERVERIP = '192.168.0.3'
-        self.PORT = 334
-        self.BUFFER_SIZE = 1024
-        self.orderId = 0
-        self.tree = tree
-        self.iid = 5
+# class Client():
+#     def __init__(self, ip, tree):
+#         self.CLIENTIP = ip
+#         self.SERVERIP = '192.168.0.3'
+#         self.PORT = 334
+#         self.BUFFER_SIZE = 1024
+#         self.orderId = 0
+#         self.tree = tree
+#         self.iid = 5
 
-    def prepareSocket(self):
-        sock = socket.socket(socket.AF_INET)
-        sock.connect((self.SERVERIP, self.PORT))
-        self.sock = sock
+#     def prepareSocket(self):
+#         sock = socket.socket(socket.AF_INET)
+#         sock.connect((self.SERVERIP, self.PORT))
+#         self.sock = sock
 
-    # データ受信関数
-    def recvData(self):
-        while True:
-            try:
-                data = self.sock.recv(self.BUFFER_SIZE)
-                if data == b"":
-                    break
-                content = pickle.loads(data)
-                print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
-                menuId = content.menuId
-                if content.mode == 8 :
-                    m = menu.Menu()
-                    name = m.getName(menuId)
-                    price = m.getPrice(menuId)
-                    *_, seatNum = content.sender.split('.')
-                    seatNum = int(seatNum)/2
-                    catch_order(tree, int(seatNum), name, content.num, price)
-#                     iid += 1
-                elif content.mode == 9 :
-                    print('receive!!')
-                    sub_window(content.num)
-            except ConnectionResetError:
-                break
+#     # データ受信関数
+#     def recvData(self):
+#         while True:
+#             try:
+#                 data = self.sock.recv(self.BUFFER_SIZE)
+#                 if data == b"":
+#                     break
+#                 content = pickle.loads(data)
+#                 print(f'new order({content.key}):', 'menu:', content.menuId, 'num:', content.num)
+#                 menuId = content.menuId
+#                 if content.mode == 8 :
+#                     m = menu.Menu()
+#                     name = m.getName(menuId)
+#                     price = m.getPrice(menuId)
+#                     *_, seatNum = content.sender.split('.')
+#                     seatNum = int(seatNum)/2
+#                     catch_order(tree, int(seatNum), name, content.num, price)
+# #                     iid += 1
+#                 elif content.mode == 9 :
+#                     print('receive!!')
+#                     sub_window(content.num)
+#             except ConnectionResetError:
+#                 break
 
-        self.sock.shutdown(socket.SHUT_RDWR)
-        self.sock.close()
+#         self.sock.shutdown(socket.SHUT_RDWR)
+#         self.sock.close()
         
-    def run(self):
-        # �f�[�^��M���T�u�X���b�h�Ŏ��s
-        thread = threading.Thread(target=self.recvData)
-        thread.start()
+#     def run(self):
+#         # �f�[�^��M���T�u�X���b�h�Ŏ��s
+#         thread = threading.Thread(target=self.recvData)
+#         thread.start()
 
-    def send(self, unit):
-        # �f�[�^�����[�v
-        try:
-            unit.sender = self.CLIENTIP
-            unit.key = self.orderId
-            self.sock.send(pickle.dumps(unit))
-            self.orderId += 1
-        except ConnectionResetError:
-            pass
+#     def send(self, unit):
+#         # �f�[�^�����[�v
+#         try:
+#             unit.sender = self.CLIENTIP
+#             unit.key = self.orderId
+#             self.sock.send(pickle.dumps(unit))
+#             self.orderId += 1
+#         except ConnectionResetError:
+#             pass
 
-    def disconnect(self):
-        self.sock.shutdown(socket.SHUT_RDWR)
-        self.sock.close()
+#     def disconnect(self):
+#         self.sock.shutdown(socket.SHUT_RDWR)
+#         self.sock.close()
 
 
 if __name__ == "__main__":
