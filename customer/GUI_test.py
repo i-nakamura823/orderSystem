@@ -64,7 +64,8 @@ def Create_sub_window(content) :
         result = "受理"
         for pastContent in clt.msglog.items() :
             if content.orderId == pastContent.orderId :
-                check_value = check_value + (int(menu.getPrice(int(content.menuId))) * int(content.num)) * 0.7
+                if pastContent.mode == 2 or pastContent.mode == 3 :
+                    check_value = check_value + (int(menu.getPrice(int(content.menuId))) * int(content.num)) * 0.7
     elif int(content.mode) == 5 :
         result = "拒否"
     
@@ -311,6 +312,7 @@ def sb():
     global clt
     global check_value
     menu = Menu()
+    menu_id = 0
     menu_id = getMenuid()
     if mode == 0 :
         mode_id = 4
@@ -323,7 +325,6 @@ def sb():
         mode_id = 1
         menu_id = onedarilist_num_selected.get()
         seatIp = '192.168.0.1'
-        check_value = check_value + (int(menu.getPrice(menu_id)) * int(num_selected.get())) * 0.7
     elif mode == 3:
         mode_id = 2
         seatIp = getIp(seat_num_selected)
@@ -360,6 +361,8 @@ def getMenuid():
         return 1
     elif menu_selected.get() == "枝豆" :
         return 2
+    else :
+        return 3
     
 def getSeatid(ip):
     iptoseat = {"192.168.0.2":1, "192.168.0.4":2, "192.168.0.6":3}
