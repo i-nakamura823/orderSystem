@@ -49,6 +49,10 @@ class Sub_Window :
 
 
 def Create_sub_window(content) :
+    #商品名を取得
+    menu = Menu();
+    menuName = menu.getName(int(content.menuId))
+
     #modeによってあちきゃく、こっそり、受理、拒否を判定
     if content.sender == clt.CLIENTIP:
         return
@@ -58,12 +62,12 @@ def Create_sub_window(content) :
         result = "こっそりおねだり"
     elif int(content.mode) == 4 :
         result = "受理"
+        for pastContent in clt.msglog.items() :
+            if content.orderId == pastContent.orderId :
+                check_value = check_value + (int(menu.getPrice(int(content.menuId))) * int(content.num)) * 0.7
     elif int(content.mode) == 5 :
         result = "拒否"
     
-    #商品名を取得
-    menu = Menu();
-    menuName = menu.getName(int(content.menuId))
 
     #サブウインドウの生成
     sub_win = tk.Toplevel()
@@ -95,14 +99,14 @@ def combo():
     root.geometry('700x600')
     
     notebook = ttk.Notebook(root)
-    tab_order = tk.Frame(notebook, bg = "white", takefocus = True)
+    tab_order = tk.Frame(notebook, bg = "white")
     tab_atikyaku = tk.Frame(notebook, bg = "white")
     tab_mitsugi = tk.Frame(notebook, bg = "white")
     tab_kossori = tk.Frame(notebook, bg = "white")
     tab_megaphone = tk.Frame(notebook, bg = "white")
     
 
-    menu = ('beer','karaage','edamame')
+    menu = ('ビール','唐揚げ','枝豆')
     num = ('1','2','3')
     seat_num = ('1','2','3')
     onedarilist_num = ('1','2','3','4','5','6','7','8','9','10')
@@ -124,8 +128,6 @@ def combo():
     selectlist[3] = onedarilist_num_selected
     """
     
-    comboboxlist = []
-    #combobox1 = ttk.Combobox(root, textvariable = v1, value = module1)
     #order
     mode_b_order = ttk.Button(tab_order, text = "モード変更")
     menu_label_order = ttk.Label(tab_order, text = "メニュー", background = "white")
@@ -137,6 +139,7 @@ def combo():
     
     mode_b_order.bind("<Return>", lambda event:mb())
     send_b_order.bind("<Return>", lambda event:sb())
+    check_b_order.bind("<Return>", lambda event:cb())
     
     #atikyaku
     mode_b_atikyaku = ttk.Button(tab_atikyaku, text = "モード変更")
@@ -151,6 +154,7 @@ def combo():
     
     mode_b_atikyaku.bind("<Return>", lambda event:mb())
     send_b_atikyaku.bind("<Return>", lambda event:sb())
+    check_b_atikyaku.bind("<Return>", lambda event:cb())
     
     #mitsugi
     mode_b_mitsugi = ttk.Button(tab_mitsugi, text = "モード変更")
@@ -161,6 +165,7 @@ def combo():
     
     mode_b_mitsugi.bind("<Return>", lambda event:mb())
     send_b_mitsugi.bind("<Return>", lambda event:sb())
+    check_b_mitsugi.bind("<Return>", lambda event:cb())
     
     #kossori
     mode_b_kossori = ttk.Button(tab_kossori, text = "モード変更")
@@ -175,6 +180,7 @@ def combo():
     
     mode_b_kossori.bind("<Return>", lambda event:mb())
     send_b_kossori.bind("<Return>", lambda event:sb())
+    check_b_kossori.bind("<Return>", lambda event:cb())
     
     #megaphone
     mode_b_megaphone = ttk.Button(tab_megaphone, text = "モード変更")
@@ -187,6 +193,7 @@ def combo():
     
     mode_b_megaphone.bind("<Return>", lambda event:mb())
     send_b_megaphone.bind("<Return>", lambda event:sb())
+    check_b_megaphone.bind("<Return>", lambda event:cb())
     
     notebook.add(tab_order, text = "注文", underline = 0)
     notebook.add(tab_atikyaku, text = "あち客", underline = 0)
@@ -302,14 +309,21 @@ def mb():
     
 def sb():
     global clt
+    global check_value
+    menu = Menu()
     menu_id = getMenuid()
-    if mode == 1 :
+    if mode == 0 :
+        mode_id = 4
+        seatIp = '192.168.0.5'
+        check_value = check_value + (int(menu.getPrice(menu_id)) * int(num_selected.get()))
+    elif mode == 1 :
         mode_id = 0
         seatIp = getIp(seat_num_selected.get())
     elif mode == 2:
         mode_id = 1
-        menu_id = onedarilist_num_selected.set("")
+        menu_id = onedarilist_num_selected.get()
         seatIp = '192.168.0.1'
+        check_value = check_value + (int(menu.getPrice(menu_id)) * int(num_selected.get())) * 0.7
     elif mode == 3:
         mode_id = 2
         seatIp = getIp(seat_num_selected)
@@ -318,13 +332,33 @@ def sb():
         seatIp = '192.168.0.1'
     msg = comutil.ComUnit(mode_id, seatIp, menu_id, num_selected.get())
     clt.send(msg)
+
+def cb() :
+    global check_value
+    menu_selected.set("")
+    num_selected.set("")
+    seat_num_selected.set("")
+    onedarilist_num_selected.set("")
+    check_win = tk.Toplevel()
+    check_win.geometry("300x100")
+    label_sub1 = tk.Label(check_win, text="お会計は")
+    label_sub2 = tk.Label(check_win, text=f"{check_value}円です")
+    label_sub3 = tk.Label(check_win, text="ウインドウを閉じる：↓")
+    label_sub1.pack()
+    label_sub2.pack()
+    label_sub3.pack()
+    check_win.focus_set()
+    checkContent = comutil.ComUnit(6, '192.168.0.1', 0, 1)
+    clt.send(checkContent)
+    sub_windows.append(Sub_Window(check_win, checkContent, clt))
+    check_value = 0
     
 def getMenuid():
-    if menu_selected.get() == "beer" :
+    if menu_selected.get() == "ビール" :
         return 0
-    elif menu_selected.get() == "karaage" :
+    elif menu_selected.get() == "唐揚げ" :
         return 1
-    elif menu_selected.get() == "edamame" :
+    elif menu_selected.get() == "枝豆" :
         return 2
     
 def getSeatid(ip):
@@ -382,6 +416,7 @@ partlist = [[0 for i in range(6)] for j in range(5)]
 part = 0
 global mode
 mode = 0
+check_value = 0
 sub_windows = []
 clt = srvclt.Client('192.168.0.6')
 clt.prepareSocket()
