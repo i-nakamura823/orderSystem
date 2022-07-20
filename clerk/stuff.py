@@ -54,7 +54,7 @@ def clear_order_fromFocus() :
 #注文が届いたら新たに行を追加
 def catch_order(tree, zaseki, name, num, cost) :
     global id
-    tree.insert(parent='', index='end', iid=id, values=(zaseki,name, num, cost))
+    # tree.insert(parent='', index='end', iid=id, values=(zaseki,name, num, cost))
     tree.insert(parent='', index='end', iid=id, values=(zaseki,name, num))
     id += 1
 
