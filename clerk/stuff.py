@@ -55,15 +55,16 @@ def clear_order_fromFocus() :
 def catch_order(tree, zaseki, name, num, cost) :
     global id
     tree.insert(parent='', index='end', iid=id, values=(zaseki,name, num, cost))
+    tree.insert(parent='', index='end', iid=id, values=(zaseki,name, num))
     id += 1
 
 def add_chicken(tree) :
     global id
-    tree.insert(parent='', index='end', iid=id, values=(1,"からあげ", 3, 300))
+    tree.insert(parent='', index='end', iid=id, values=(1,"からあげ", 3))
     id += 1
 def add_mame(tree) :
     global id
-    tree.insert(parent='', index='end', iid=id, values=(1,"枝豆", 3, 300))
+    tree.insert(parent='', index='end', iid=id, values=(1,"枝豆", 3))
     id += 1
 
 #
@@ -73,7 +74,7 @@ def Create_orderList() :
     #メインウインドウの生成
     root = tk.Tk()
     root.title("オーダーリスト")
-    root.geometry('400x500')
+    root.geometry('300x500')
 
     #Notebookの作成（タブ管理）
     #notebook = ttk.Notebook(root)
@@ -85,22 +86,22 @@ def Create_orderList() :
     #notebook.add(tab_waitingOrder, text ="waiting", underline=0)
 
     #Treeviewの生成
-    tree1 = ttk.Treeview(root, columns = column)
+    tree1 = ttk.Treeview(root, columns = column, height = 20)
     #tree2 = ttk.Treeview(tab_waitingOrder, columns = column)
     #tab_waitingOrder = ttk.Treeview(root, columns = column)
 
     #列の設定
     tree1.column("#0", width=0, stretch="no")
-    tree1.column('zaseki', anchor='center', width=80)
-    tree1.column('Name',anchor='center', width=100)
-    tree1.column('num', anchor='center', width=80)
-    tree1.column('cost', anchor='center', width=80)
+    tree1.column('zaseki', anchor='center', width=89)
+    tree1.column('Name',anchor='center', width=120)
+    tree1.column('num', anchor='center', width=89)
+    # tree1.column('cost', anchor='center', width=80)
     # 列の見出し設定
     tree1.heading('#0',text='')
     tree1.heading('zaseki', text='座席番号',anchor='center')
     tree1.heading('Name', text='商品名', anchor='center')
     tree1.heading('num', text='個数',anchor='center')
-    tree1.heading('cost',text='価格', anchor='center')
+    # tree1.heading('cost',text='価格', anchor='center')
     # レコードの追加
     # tree1.insert(parent='', index='end', iid=0 ,values=(1, 'ビール', 1, 400))
     # tree1.insert(parent='', index='end', iid=1 ,values=(2,'からあげ', 2, 350))
@@ -143,7 +144,7 @@ def Create_orderList() :
 
 def registerOrder(content):
     menuId = content.menuId
-    if content.mode == 8 :
+    if content.mode == 4 :
         m = menu.Menu()
         name = m.getName(menuId)
         price = m.getPrice(menuId)
@@ -172,7 +173,7 @@ def main():
     # for i in range(3):
     #     time.sleep(1)
     #     print('オーダーします')
-    #     unit = comutil.ComUnit(8 ,"192.168.0.5", i, i)
+    #     unit = comutil.ComUnit(4 ,"192.168.0.5", i, i)
     #     clt.send(unit)
 
 
