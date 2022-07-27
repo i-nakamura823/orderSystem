@@ -49,9 +49,10 @@ class Sub_Window :
 
 
 def Create_sub_window(content) :
+    global check_value
     #商品名を取得
     menu = Menu();
-    menuName = menu.getName(int(content.menuId))
+    
 
     #modeによってあちきゃく、こっそり、受理、拒否を判定
     if content.sender == clt.CLIENTIP:
@@ -62,20 +63,25 @@ def Create_sub_window(content) :
         result = "こっそりおねだり"
     elif int(content.mode) == 4 :
         result = "受理"
-        for pastContent in clt.msglog.items() :
+        for pastContent in clt.msglog.values() :
             if content.orderId == pastContent.orderId :
-                if pastContent.mode == 2 or pastContent.mode == 3 :
-                    check_value = check_value + (int(menu.getPrice(int(content.menuId))) * int(content.num)) * 0.7
+                if pastContent.mode == 0 or pastContent.mode == 1 :
+                    check_value = int(check_value + (int(menu.getPrice(int(content.menuId))) * int(content.num)) * 0.7)
+                    if pastContent.mode == 1 :
+                        return
     elif int(content.mode) == 5 :
         result = "拒否"
+        
+    menuName = menu.getName(int(content.menuId))
     
 
     #サブウインドウの生成
     sub_win = tk.Toplevel()
     sub_win.geometry("300x100")
     if int(content.mode) == 0 or int(content.mode) == 2:
+        seat_num = getSeatid(content.sender)
         label_sub1 = tk.Label(sub_win, text=f"{result}")
-        label_sub2 = tk.Label(sub_win, text=f"座席番号：{content.sender}　メニュー：{menuName}　個数：{content.num}")
+        label_sub2 = tk.Label(sub_win, text=f"座席番号：{seat_num}　メニュー：{menuName}　個数：{content.num}")
         label_sub3 = tk.Label(sub_win, text=f"受理：↑")
         label_sub4 = tk.Label(sub_win, text=f"拒否：↓")
         label_sub1.pack()
@@ -83,7 +89,8 @@ def Create_sub_window(content) :
         label_sub3.pack()
         label_sub4.pack()
     elif int(content.mode) == 4 or int(content.mode) == 5:
-        label_sub1 = tk.Label(sub_win, text=f"{content.sender}番さんが注文を{result}しました。")
+        seat_num = getSeatid(content.sender)
+        label_sub1 = tk.Label(sub_win, text=f"{seat_num}番さんが注文を{result}しました。")
         label_sub2 = tk.Label(sub_win, text=f"メニュー：{menuName}　個数：{content.num}")
         label_sub3 = tk.Label(sub_win, text=f"ウインドウを閉じる：↓")
         label_sub1.pack()
@@ -109,7 +116,12 @@ def combo():
 
     menu = ('ビール','唐揚げ','枝豆')
     num = ('1','2','3')
-    seat_num = ('1','2','3')
+    if clt.CLIENTIP == '192.168.0.6' :
+        seat_num = ('1','2')
+    elif clt.CLIENTIP == '192.168.0.4' :
+        seat_num = ('1','3')
+    elif clt.CLIENTIP == '192.168.0.2' :
+        seat_num = ('2','3')
     onedarilist_num = ('1','2','3','4','5','6','7','8','9','10')
     
     #v1 = tk.StringVar()
@@ -197,9 +209,9 @@ def combo():
     check_b_megaphone.bind("<Return>", lambda event:cb())
     
     notebook.add(tab_order, text = "注文", underline = 0)
-    notebook.add(tab_atikyaku, text = "あち客", underline = 0)
-    notebook.add(tab_mitsugi, text = "みつぎ", underline = 0)
-    notebook.add(tab_kossori, text = "こっそり", underline = 0)
+    notebook.add(tab_atikyaku, text = "アチキャク", underline = 0)
+    notebook.add(tab_mitsugi, text = "ギフト", underline = 0)
+    notebook.add(tab_kossori, text = "コッソリ", underline = 0)
     notebook.add(tab_megaphone, text = "メガホン", underline = 0)
     notebook.pack(expand = True, fill = "both", padx = 10, pady = 10)
     
@@ -312,25 +324,42 @@ def sb():
     global clt
     global check_value
     menu = Menu()
-    menu_id = 0
-    menu_id = getMenuid()
     if mode == 0 :
         mode_id = 4
+        menu_id = getMenuid()
         seatIp = '192.168.0.5'
-        check_value = check_value + (int(menu.getPrice(menu_id)) * int(num_selected.get()))
+        if menu_id == 3 or num_selected.get() == "":
+            return
+        else :
+            check_value = check_value + (int(menu.getPrice(menu_id)) * int(num_selected.get()))
     elif mode == 1 :
         mode_id = 0
-        seatIp = getIp(seat_num_selected.get())
+        menu_id = getMenuid()
+        if menu_id == 3 or num_selected.get() == "" or seat_num_selected.get() == "":
+            return
+        else :
+            seatIp = getIp(seat_num_selected.get())
     elif mode == 2:
         mode_id = 1
-        menu_id = onedarilist_num_selected.get()
-        seatIp = '192.168.0.1'
+        if onedarilist_num_selected.get() == "":
+            return
+        else :
+            menu_id = onedarilist_num_selected.get()
+            seatIp = '192.168.0.1'
     elif mode == 3:
         mode_id = 2
-        seatIp = getIp(seat_num_selected)
+        menu_id = getMenuid()
+        if menu_id == 3 or num_selected.get() == "" or seat_num_selected.get() == "":
+            return
+        else:
+            seatIp = getIp(seat_num_selected.get())
     elif mode == 4:
         mode_id = 3
-        seatIp = '192.168.0.1'
+        menu_id = getMenuid()
+        if menu_id == 3 or num_selected.get() == "" :
+            return
+        else :
+            seatIp = '192.168.0.1'
     msg = comutil.ComUnit(mode_id, seatIp, menu_id, num_selected.get())
     clt.send(msg)
 
