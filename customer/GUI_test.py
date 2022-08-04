@@ -79,9 +79,8 @@ def Create_sub_window(content) :
     sub_win = tk.Toplevel()
     sub_win.geometry("300x100")
     if int(content.mode) == 0 or int(content.mode) == 2:
-        seat_num = getSeatid(content.sender)
         label_sub1 = tk.Label(sub_win, text=f"{result}")
-        label_sub2 = tk.Label(sub_win, text=f"座席番号：{seat_num}　メニュー：{menuName}　個数：{content.num}")
+        label_sub2 = tk.Label(sub_win, text=f"座席番号：{content.sender}　メニュー：{menuName}　個数：{content.num}")
         label_sub3 = tk.Label(sub_win, text=f"受理：↑")
         label_sub4 = tk.Label(sub_win, text=f"拒否：↓")
         label_sub1.pack()
@@ -89,8 +88,7 @@ def Create_sub_window(content) :
         label_sub3.pack()
         label_sub4.pack()
     elif int(content.mode) == 4 or int(content.mode) == 5:
-        seat_num = getSeatid(content.sender)
-        label_sub1 = tk.Label(sub_win, text=f"{seat_num}番さんが注文を{result}しました。")
+        label_sub1 = tk.Label(sub_win, text=f"{content.sender}番さんが注文を{result}しました。")
         label_sub2 = tk.Label(sub_win, text=f"メニュー：{menuName}　個数：{content.num}")
         label_sub3 = tk.Label(sub_win, text=f"ウインドウを閉じる：↓")
         label_sub1.pack()
@@ -101,7 +99,7 @@ def Create_sub_window(content) :
     #サブウインドウをリストに追加
     sub_windows.append(Sub_Window(sub_win, content, clt))
 
-def combo():
+def main_window():
 
     root = tk.Tk()
     root.geometry('700x600')
@@ -134,12 +132,6 @@ def combo():
     num_selected = tk.StringVar()
     seat_num_selected = tk.StringVar()
     onedarilist_num_selected = tk.StringVar()
-    """
-    selectlist[0] = menu_selected
-    selectlist[1] = num_selected
-    selectlist[2] = seat_num_selected
-    selectlist[3] = onedarilist_num_selected
-    """
     
     #order
     mode_b_order = ttk.Button(tab_order, text = "モード変更")
@@ -328,38 +320,23 @@ def sb():
         mode_id = 4
         menu_id = getMenuid()
         seatIp = '192.168.0.5'
-        if menu_id == 3 or num_selected.get() == "":
-            return
-        else :
-            check_value = check_value + (int(menu.getPrice(menu_id)) * int(num_selected.get()))
+        check_value = check_value + (int(menu.getPrice(menu_id)) * int(num_selected.get()))
     elif mode == 1 :
         mode_id = 0
         menu_id = getMenuid()
-        if menu_id == 3 or num_selected.get() == "" or seat_num_selected.get() == "":
-            return
-        else :
-            seatIp = getIp(seat_num_selected.get())
+        seatIp = getIp(seat_num_selected.get())
     elif mode == 2:
         mode_id = 1
-        if onedarilist_num_selected.get() == "":
-            return
-        else :
-            menu_id = onedarilist_num_selected.get()
-            seatIp = '192.168.0.1'
+        menu_id = onedarilist_num_selected.get()
+        seatIp = '192.168.0.1'
     elif mode == 3:
         mode_id = 2
         menu_id = getMenuid()
-        if menu_id == 3 or num_selected.get() == "" or seat_num_selected.get() == "":
-            return
-        else:
-            seatIp = getIp(seat_num_selected.get())
+        seatIp = getIp(seat_num_selected)
     elif mode == 4:
         mode_id = 3
         menu_id = getMenuid()
-        if menu_id == 3 or num_selected.get() == "" :
-            return
-        else :
-            seatIp = '192.168.0.1'
+        seatIp = '192.168.0.1'
     msg = comutil.ComUnit(mode_id, seatIp, menu_id, num_selected.get())
     clt.send(msg)
 
@@ -400,38 +377,6 @@ def getSeatid(ip):
 def getIp(seatNum):
     iplist = ['192.168.0.2', '192.168.0.4', '192.168.0.6']
     return iplist[int(seatNum) - 1]
-    
-"""
-def bo():
-    nb.select(ta)
-    mode = 1
-    part = 0
-    partlist[mode][part].focus_set()
-    
-def ba():
-    nb.select(tmi)
-    mode = 2
-    part = 0
-    partlist[mode][part].focus_set()
-    
-def bmi():
-    nb.select(tko)
-    mode = 3
-    part = 0
-    partlist[mode][part].focus_set()
-    
-def bko():
-    nb.select(tme)
-    mode = 4
-    part = 0
-    partlist[mode][part].focus_set()
-    
-def bme():
-    nb.select(to)
-    mode = 0
-    part = 0
-    partlist[mode][part].focus_set()
-"""
 
 nb = ""
 to = ""
@@ -454,7 +399,7 @@ clt = srvclt.Client('192.168.0.6')
 clt.prepareSocket()
 clt.run()
 clt.msgHandler = Create_sub_window
-thread1 = threading.Thread(target = combo)
+thread1 = threading.Thread(target = main_window)
 thread1.start()
 time.sleep(2)
 
